@@ -1,5 +1,5 @@
-# Biblioteca de ejercicios · Portero Alpha Academy
+# Portero Alpha Academy · App y biblioteca de ejercicios
 
-Este repositorio guarda la biblioteca de ejercicios que descarga la app de Portero Alpha Academy.
-El archivo importante es `library.json`: cada vez que se agrega un ejercicio, sube el número de versión
-y la app lo descarga sola cuando se abre con internet.
+Aquí vive la app de la academia (se abre desde el enlace de GitHub Pages) y su biblioteca de ejercicios (`library.json`).
+Cuando se agrega un ejercicio nuevo, la app lo descarga sola al abrirla con internet.
+Para agregar ejercicios, ver `GUIA-EJERCICIOS.md`.

@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#060912">
+<meta name="color-scheme" content="dark">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Portero Alpha">
+<title>Portero Alpha Academy</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div id="app">
+  <header id="top">
+    <button id="backBtn" class="icon-btn" aria-label="Volver" hidden></button>
+    <img id="logo" src="icons/icon-192.png" alt="" width="34" height="34">
+    <h1 id="title">Portero Alpha</h1>
+    <span id="netPill" class="pill">…</span>
+    <button id="gearBtn" class="icon-btn" aria-label="Ajustes"></button>
+  </header>
+  <main id="view"></main>
+  <nav id="tabs" aria-label="Secciones">
+    <i class="ind" aria-hidden="true"></i>
+    <button data-tab="home" aria-label="Inicio"><span class="ti" data-ic="home"></span><b>Inicio</b></button>
+    <button data-tab="students" aria-label="Alumnos"><span class="ti" data-ic="users"></span><b>Alumnos</b></button>
+    <button data-tab="attendance" aria-label="Lista"><span class="ti" data-ic="clipboard"></span><b>Lista</b></button>
+    <button data-tab="exercises" aria-label="Ejercicios"><span class="ti" data-ic="field"></span><b>Ejercicios</b></button>
+    <button data-tab="sessions" aria-label="Sesiones"><span class="ti" data-ic="calendar"></span><b>Sesiones</b></button>
+  </nav>
+</div>
+<div id="modalRoot"></div>
+<div id="toast" role="status"></div>
+<noscript>Esta aplicación necesita JavaScript.</noscript>
+<script src="js/config.js"></script>
+<script src="js/core.js"></script>
+<script src="js/icons.js"></script>
+<script src="js/students.js"></script>
+<script src="js/attendance.js"></script>
+<script src="js/board.js"></script>
+<script src="js/exercises.js"></script>
+<script src="js/sessions.js"></script>
+<script src="js/home.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
