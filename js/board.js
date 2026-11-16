@@ -310,12 +310,13 @@
   }
 
   /* miniatura para las listas */
-  PA.thumb = function (scene, width) {
+  PA.thumb = function (scene, width, flat) {
     width = width || 168;
     const c = document.createElement('canvas');
     c.width = width; c.height = Math.round(width * H / W); c.className = 'thumb';
     const ctx = c.getContext('2d');
     ctx.setTransform(width / W, 0, 0, width / W, 0, 0);
+    if (!flat && PA.illusDraw) { try { const st = PA.illusFrame(scene, 0); PA.illusDraw(ctx, scene, { ...st, marks: [] }, 0); return c; } catch (e) { /* si falla, vuelve a la pizarra */ } }
     drawView(ctx, staticView(scene.frames[0], true), null, scene.view);
     return c;
   };
@@ -328,12 +329,14 @@
   }
   const ease = (p) => (p < 0.5 ? 2 * p * p : 1 - Math.pow(-2 * p + 2, 2) / 2);
 
+  if (PA.illusInit) PA.illusInit({ drawArrow, drawMark, pill, MC, ARROW });
+
   /* ---------- componente de pizarra ---------- */
   PA.createBoard = function (host, sceneIn, opts) {
     opts = opts || {};
     const ro = !!opts.readOnly;
     const scene = JSON.parse(JSON.stringify(sceneIn && sceneIn.frames && sceneIn.frames.length ? sceneIn : PA.blankScene()));
-    const S = { cur: 0, tool: 'move', sel: null, drag: null, path: null, play: false, pi: 0, t: 0, speed: 1, undo: [], raf: 0, last: 0 };
+    const S = { ill: ro ? (function () { try { return localStorage.getItem('pa_ill') !== '0'; } catch (e) { return true; } })() : false, az: 0, cur: 0, tool: 'move', sel: null, drag: null, path: null, play: false, pi: 0, t: 0, speed: 1, undo: [], raf: 0, last: 0 };
     const canvas = h('canvas', { class: 'board-canvas' });
     const ctx = canvas.getContext('2d');
     const playBtn = h('button', { class: 'play', 'aria-label': 'Animar', onclick: () => (S.play ? stop() : play()) }, PA.icon('play', 24));
@@ -402,6 +405,28 @@
     };
     const viewSw = ro ? null : h('div', { class: 'chips viewsw' }, [['top', 'Desde arriba'], ['front', 'Arco de frente']].map(([k, l]) =>
       (viewBtns[k] = h('button', { class: 'chip' + ((scene.view || 'top') === k ? ' on' : ''), 'data-view': k, onclick: () => setView(k) }, l))));
+    const POSTURAS = [['base', 'Posición base'], ['stand', 'De pie'], ['shuffle', 'Pasos laterales'], ['run', 'Corriendo'], ['catch_chest', 'Atrapa al pecho'], ['catch_low', 'Atrapa abajo'], ['catch_high', 'Salta y atrapa'],
+      ['block_low', 'De rodillas'], ['dive_l', 'Vuela a su izquierda'], ['dive_r', 'Vuela a su derecha'], ['lie_l', 'Tendido izquierda'], ['lie_r', 'Tendido derecha'], ['punch', 'Despeja de puños'],
+      ['hold', 'Con balón en manos'], ['throw_wind', 'Prepara el lanzamiento'], ['throw_over', 'Lanza por arriba'], ['throw_under_back', 'Prepara saque rodado'], ['throw_under', 'Saque rodado'],
+      ['kick_back', 'Prepara el pase'], ['kick', 'Patea'], ['kick_follow', 'Termina la patada'], ['receive', 'Recibe el balón'], ['squat', 'Agachado'], ['point', 'Señala']];
+    const postBar = h('div', { class: 'chips posebar', hidden: true }, POSTURAS.map(([k, l]) =>
+      h('button', { class: 'chip', 'data-post': k, onclick: () => {
+        const it = S.sel && frame().items.find((o) => o.id === S.sel);
+        if (!it) return;
+        snap(); it.p = k; draw();
+      } }, l)));
+    const modeBtns = {};
+    const setMode = (ill) => {
+      S.ill = ill; try { localStorage.setItem('pa_ill', ill ? '1' : '0'); } catch (e) { /* ok */ }
+      Object.keys(modeBtns).forEach((k) => modeBtns[k].classList.toggle('on', (k === 'ill') === ill));
+      if (rotBtn) rotBtn.hidden = !ill;
+      if (tools) tools.hidden = ill; hint.hidden = ill; S.sel = ill ? null : S.sel; if (viewSw) viewSw.hidden = ill;
+      draw();
+    };
+    const rotBtn = h('button', { class: 'chip', 'aria-label': 'Girar la cámara', hidden: !S.ill, onclick: () => { S.az = (S.az + 40) % 360; draw(); } }, PA.icon('undo', 16), ' Girar');
+    const modeSw = h('div', { class: 'chips modesw' },
+      (modeBtns.ill = h('button', { class: 'chip' + (S.ill ? ' on' : ''), onclick: () => setMode(true) }, 'Ilustrado')),
+      (modeBtns.flat = h('button', { class: 'chip' + (!S.ill ? ' on' : ''), onclick: () => setMode(false) }, 'Pizarra')), rotBtn);
     const chipsBox = h('div', { class: 'fchips' });
     const transport = h('div', { class: 'transport' },
       PA.btn('chevL', '', 'sm', () => go(-1), 'Cuadro anterior'),
@@ -421,7 +446,7 @@
     }
 
     const wrap = h('div', { class: 'board-wrap' }, canvas);
-    const root = h('div', { class: 'board' }, viewSw, ro ? null : tools, wrap, ro ? null : poseBar, legend, capBox, chipsBox, transport, capInput, ro ? null : hint);
+    const root = h('div', { class: 'board' }, modeSw, viewSw, ro ? null : tools, wrap, ro ? null : poseBar, ro ? null : postBar, legend, capBox, chipsBox, transport, capInput, ro ? null : hint);
     host.append(root);
 
     /* tamaño nítido según pantalla */
@@ -453,12 +478,20 @@
         .concat((B.marks || []).filter((m, i) => !ja.includes(jb[i])).map((m) => [m, p]));
       return { items, arrows, marks };
     }
+    function illNow() {
+      if (!S.play) return PA.illusFrame(scene, S.cur);
+      const p = ease(Math.max(0, Math.min(1, (S.t - 0.25) / 0.7)));
+      return PA.illusBlend(scene, S.pi, S.pi + 1, p);
+    }
     function draw() {
       const k = canvas.width / W;
       ctx.setTransform(k, 0, 0, k, 0, 0);
-      drawView(ctx, viewNow(), S.play ? null : S.sel, scene.view);
-      const si = !ro && !S.play && S.sel && frame().items.find((o) => o.id === S.sel);
+      if (S.ill && PA.illusDraw) PA.illusDraw(ctx, scene, illNow(), S.az);
+      else drawView(ctx, viewNow(), S.play ? null : S.sel, scene.view);
+      const si = !ro && !S.play && !S.ill && S.sel && frame().items.find((o) => o.id === S.sel);
       poseBar.hidden = !(scene.view === 'front' && si && PERSON[si.t]);
+      postBar.hidden = !(si && PERSON[si.t]);
+      if (si) postBar.querySelectorAll('button').forEach((b) => b.classList.toggle('on', (si.p || '') === b.dataset.post));
       const curF = S.play ? S.pi : S.cur;
       paintLegend(); paintCap();
       if (S._chipFrame !== curF + '/' + scene.frames.length) { S._chipFrame = curF + '/' + scene.frames.length; paintChips(); }
@@ -596,7 +629,7 @@
     }
 
     canvas.addEventListener('pointerdown', (e) => {
-      if (ro || S.play) return;
+      if (ro || S.play || S.ill) return;
       e.preventDefault();
       const [x, y] = pos(e);
       try { canvas.setPointerCapture(e.pointerId); } catch (err) { /* ok */ }
@@ -715,7 +748,7 @@
       toPNG: () => {
         const cap = frame().cap || '', c = document.createElement('canvas'); c.width = 1400; c.height = 1200 + (cap ? 130 : 0);
         const cx = c.getContext('2d'); cx.setTransform(2, 0, 0, 2, 0, 0);
-        drawView(cx, staticView(frame()), null, scene.view);
+        if (S.ill && PA.illusDraw) PA.illusDraw(cx, scene, PA.illusFrame(scene, S.cur), S.az); else drawView(cx, staticView(frame()), null, scene.view);
         if (cap) {
           cx.setTransform(1, 0, 0, 1, 0, 0); cx.fillStyle = '#0d1424'; cx.fillRect(0, 1200, 1400, 130);
           cx.fillStyle = '#fff'; cx.font = '700 38px system-ui,sans-serif'; cx.textAlign = 'center'; cx.textBaseline = 'middle';

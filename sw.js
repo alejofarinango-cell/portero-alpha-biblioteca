@@ -1,11 +1,11 @@
 /* Portero Alpha Academy — modo sin conexión.
    La línea VERSION la actualiza solo el script de empaquetado cuando cambia algún archivo. */
-const VERSION = '8a0c153a';
+const VERSION = '80fcadc1';
 const CACHE = 'portero-alpha-' + VERSION;
 const SHELL = [
   './', 'index.html', 'styles.css', 'manifest.webmanifest', 'library.json',
   'icons/icon-192.png', 'icons/icon-512.png', 'icons/icon-maskable-512.png', 'icons/apple-touch-icon.png',
-  'js/config.js', 'js/core.js', 'js/icons.js', 'js/students.js', 'js/attendance.js', 'js/board.js', 'js/exercises.js', 'js/sessions.js', 'js/home.js', 'js/app.js'
+  'js/config.js', 'js/core.js', 'js/icons.js', 'js/students.js', 'js/attendance.js', 'js/illus.js', 'js/board.js', 'js/exercises.js', 'js/sessions.js', 'js/home.js', 'js/app.js'
 ];
 
 self.addEventListener('install', (e) => {

@@ -57,3 +57,12 @@ Las marcas son sencillas y no se mueven; si quedan iguales entre cuadros, se man
 - Aro: `{"k":"ring","x","y","r","c":"y"}` (círculo punteado para resaltar un punto).
 Medidas aproximadas en vista de arriba: 1 metro ≈ 11 px (línea de gol y=40, área grande de x=130 a 570). En vista de frente: 60 px = 1 metro.
 Evitar poner textos encima de las fichas; mejor a un lado o arriba. Al terminar, el ejercicio se ve con una leyenda y cada cuadro muestra su frase.
+
+### Vista ilustrada (deportistas dibujados de cuerpo completo)
+La app tiene un botón "Ilustrado / Pizarra". En "Ilustrado" cada ficha se dibuja como un deportista con cuerpo, brazos y piernas, haciendo la acción. Funciona sola con cualquier ejercicio, pero se ve mucho mejor si cada ficha de persona lleva su postura. Campos opcionales dentro de cada ficha (gk, pl, op):
+- `"p"`: postura. Valores: `base` (posición base), `stand` (de pie), `shuffle` (pasos laterales), `run` (corriendo), `catch_chest` (atrapa al pecho), `catch_low` (atrapa abajo), `catch_high` (salta y atrapa), `block_low` (de rodillas), `dive_l` / `dive_r` (vuela a su izquierda / derecha), `lie_l` / `lie_r` (tendido), `punch` (despeja de puños), `hold` (balón en manos), `throw_wind` (prepara lanzamiento), `throw_over` (lanza por arriba), `throw_under_back` / `throw_under` (prepara y hace saque rodado), `kick_back` / `kick` / `kick_follow` (pase o tiro: prepara, patea, termina), `receive` (recibe el balón), `squat` (agachado), `point` (señala).
+- `"h"`: hacia dónde mira, en grados (0 = hacia quien mira la pizarra; 180 = hacia el arco; 90 y 270 = de lado). Si no se pone, la app lo calcula según el movimiento y el balón.
+- Balón en las manos de alguien: en la ficha del balón poner `"g":"<id de la persona>"` y `"gw":"B"` (dos manos), `"L"` o `"R"`. El balón sigue a esa persona en la animación.
+- Muro de rebote: en una ficha `wall` poner `"w":"board"` para dibujarlo como tablero de rebote.
+- En vista desde arriba, el balón también admite `z` (altura en píxeles) para pases por aire.
+Regla práctica: dar `p` a cada persona en cada cuadro donde haga algo distinto a estar parada o correr (la app ya dibuja de pie / corriendo por defecto). La postura debe coincidir con la frase `cap` de ese cuadro.

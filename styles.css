@@ -266,3 +266,5 @@ input[type=checkbox]{accent-color:var(--blue);width:18px;height:18px}
 .cap .ct{font-size:15px;line-height:1.4;font-weight:600;padding-top:2px}
 .cap.pop{animation:rise .35s var(--ease)}
 .capinput{font-size:14px}
+.modesw{padding-bottom:6px}
+.modesw .chip svg{vertical-align:-3px}
