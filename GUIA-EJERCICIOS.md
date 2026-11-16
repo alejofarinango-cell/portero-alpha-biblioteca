@@ -45,3 +45,15 @@ El arco se ve desde el tirador: postes en x=130 y x=570, travesaño en y=184, l�
   `k` = 1 de rodillas, `u` = 1 brazos arriba (si hay `r` grande los brazos suben solos).
 - Estirada típica a la izquierda: portero `{x:240, y:338, r:-62, z:100, u:1}`; balón en sus guantes a unos 70 px más a la izquierda y más arriba.
 - Los balones se dibujan siempre encima; el orden de las fichas debe ser el mismo en todos los cuadros.
+
+### Detalles para que se entienda mejor (opcionales, pero recomendados)
+Cada cuadro puede llevar `"cap"` (una frase corta, máx. 120 letras, que explica qué pasa en ese cuadro, ej. `"El portero espera en posición base."`)
+y `"marks"` (marcas dibujadas encima de la cancha). Usarlas en ejercicios donde ayudan a entender; no hace falta en todos.
+Las marcas son sencillas y no se mueven; si quedan iguales entre cuadros, se mantienen en pantalla.
+- Zona: `{"k":"zone","x","y","w","h","c":"g"|"b"|"y"|"r","t":"Nombre"}` (rectángulo; x,y = esquina superior izquierda; g verde, b azul, y amarillo, r rojo). El nombre es opcional y se escribe arriba de la zona.
+- Texto: `{"k":"label","x","y","t":"Texto corto"}` (máx. 40 letras, centrado en x,y).
+- Medida: `{"k":"dist","a":[x,y],"b":[x,y],"t":"5 m"}` (línea con tope en los dos extremos).
+- Paso: `{"k":"num","x","y","t":"1"}` (círculo amarillo numerado, para el orden de las acciones).
+- Aro: `{"k":"ring","x","y","r","c":"y"}` (círculo punteado para resaltar un punto).
+Medidas aproximadas en vista de arriba: 1 metro ≈ 11 px (línea de gol y=40, área grande de x=130 a 570). En vista de frente: 60 px = 1 metro.
+Evitar poner textos encima de las fichas; mejor a un lado o arriba. Al terminar, el ejercicio se ve con una leyenda y cada cuadro muestra su frase.
