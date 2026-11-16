@@ -1,6 +1,6 @@
 /* Portero Alpha Academy — modo sin conexión.
    La línea VERSION la actualiza solo el script de empaquetado cuando cambia algún archivo. */
-const VERSION = '2d94af04';
+const VERSION = '8a0c153a';
 const CACHE = 'portero-alpha-' + VERSION;
 const SHELL = [
   './', 'index.html', 'styles.css', 'manifest.webmanifest', 'library.json',
